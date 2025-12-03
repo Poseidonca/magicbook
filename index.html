@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagicBook - Создай книгу для ребенка</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --light: #f9f9f9;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9)),
+                        url('https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            border-radius: 0 0 40px 40px;
+            margin-bottom: 50px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .gradient-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .gradient-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+        
+        .book-page {
+            background: #fff9e6;
+            padding: 40px;
+            border-radius: 15px;
+            border-left: 10px solid #ffd93d;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        }
+        
+        .illustration {
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .illustration:hover {
+            transform: scale(1.03);
+        }
+        
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .step-indicator:before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .step {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+        }
+        
+        .step.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .step.completed {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .ai-thinking {
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary);
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .story-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .age-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 25px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .age-badge:hover, .age-badge.active {
+            background: #1976d2;
+            color: white;
+            border-color: #1976d2;
+        }
+        
+        .interest-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #f3f4f6;
+            color: #374151;
+            border-radius: 20px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .interest-badge:hover, .interest-badge.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .book-preview {
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+            border: 5px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .book-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .pricing-card {
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            height: 100%;
+        }
+        
+        .pricing-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-10px);
+        }
+        
+        .pricing-card.popular {
+            border-color: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background: var(--primary);
+            color: white;
+            padding: 5px 30px;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+        }
+        
+        .nav-link {
+            cursor: pointer;
+        }
+        
+        .form-control, .form-select {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .section-hidden {
+            display: none;
+        }
+        
+        .section-visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Языковой переключатель -->
+    <div class="language-switcher">
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-primary active language-btn" data-lang="ru">
+                🇷🇺 Рус
+            </button>
+            <button class="btn btn-sm btn-outline-primary language-btn" data-lang="en">
+                🇬🇧 Eng
+            </button>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <i class="fas fa-book-open me-2"></i>MagicBook
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#create">Создать</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#preview">Пример книги</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#pricing">Заказать</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">Как это работает</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главный экран -->
+    <section id="home" class="hero">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">Создайте уникальную книгу для вашего ребенка</h1>
+            <p class="lead mb-5">AI превратит любую проблему в увлекательную историю с вашим ребенком в главной роли</p>
+            <a href="#create" class="btn gradient-btn btn-lg">
+                <i class="fas fa-wand-magic-sparkles me-2"></i>Создать свою книгу
+            </a>
+        </div>
+    </section>
+
+    <!-- Форма создания книги -->
+    <section id="create" class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card p-4 p-md-5">
+                        <h2 class="text-center mb-4">Создайте свою книгу за 5 минут</h2>
+                        
+                        <!-- Индикатор шагов -->
+                        <div class="step-indicator">
+                            <div class="step active" onclick="goToStep(1)">1</div>
+                            <div class="step" onclick="goToStep(2)">2</div>
+                            <div class="step" onclick="goToStep(3)">3</div>
+                            <div class="step" onclick="goToStep(4)">4</div>
+                        </div>
+                        
+                        <!-- Форма -->
+                        <form id="bookForm">
+                            <!-- Шаг 1: Основная информация -->
+                            <div class="step-content step-1">
+                                <h4 class="mb-4"><i class="fas fa-user me-2"></i>Основная информация</h4>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Имя родителя *</label>
+                                        <input type="text" class="form-control" id="parentName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Имя ребенка *</label>
+                                        <input type="text" class="form-control" id="childName" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Возраст ребенка *</label>
+                                    <div class="d-flex flex-wrap" id="ageSelection">
+                                        <span class="age-badge" data-age="1">1 год</span>
+                                        <span class="age-badge" data-age="2">2 года</span>
+                                        <span class="age-badge active" data-age="3">3 года</span>
+                                        <span class="age-badge" data-age="4">4 года</span>
+                                        <span class="age-badge" data-age="5">5 лет</span>
+                                        <span class="age-badge" data-age="6">6 лет</span>
+                                        <span class="age-badge" data-age="7">7 лет</span>
+                                        <span class="age-badge" data-age="8">8 лет</span>
+                                        <span class="age-badge" data-age="9">9 лет</span>
+                                        <span class="age-badge" data-age="10">10 лет</span>
+                                        <span class="age-badge" data-age="11">11 лет</span>
+                                        <span class="age-badge" data-age="12">12 лет</span>
+                                    </div>
+                                    <input type="hidden" id="childAge" value="3">
+                                </div>
+                                
+                                <div class="text-end">
+                                    <button type="button" class="btn gradient-btn" onclick="goToStep(2)">
+                                        Далее <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Шаг 2: Проблема и интересы -->
+                            <div class="step-content step-2" style="display: none;">
+                                <h4 class="mb-4"><i class="fas fa-bullseye me-2"></i>Проблема и интересы</h4>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Опишите проблему или задачу *</label>
+                                    <textarea class="form-control" id="problem" rows="4" 
+                                              placeholder="Пример: Ребенок не хочет убирать игрушки, боится темноты, не хочет есть овощи, не чистит зубы..."
+                                              required></textarea>
+                                    <div class="form-text">AI проанализирует проблему и предложит решение</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Интересы ребенка</label>
+                                    <div class="d-flex flex-wrap mb-3" id="interestsSelection">
+                                        <span class="interest-badge active" data-interest="динозавры">🦕 Динозавры</span>
+                                        <span class="interest-badge" data-interest="принцессы">👸 Принцессы</span>
+                                        <span class="interest-badge" data-interest="космос">🚀 Космос</span>
+                                        <span class="interest-badge" data-interest="машинки">🚗 Машинки</span>
+                                        <span class="interest-badge" data-interest="животные">🐶 Животные</span>
+                                        <span class="interest-badge" data-interest="супергерои">🦸 Супергерои</span>
+                                        <span class="interest-badge" data-interest="феи">🧚 Феи</span>
+                                        <span class="interest-badge" data-interest="роботы">🤖 Роботы</span>
+                                        <span class="interest-badge" data-interest="пираты">🏴‍☠️ Пираты</span>
+                                        <span class="interest-badge" data-interest="единороги">🦄 Единороги</span>
+                                        <span class="interest-badge" data-interest="спорт">⚽ Спорт</span>
+                                        <span class="interest-badge" data-interest="музыка">🎵 Музыка</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="customInterests" 
+                                           placeholder="Или напишите свои интересы через запятую...">
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="goToStep(1)">
+                                        <i class="fas fa-arrow-left me-2"></i>Назад
+                                    </button>
+                                    <button type="button" class="btn gradient-btn" onclick="goToStep(3)">
+                                        Далее <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Шаг 3: Персонализация -->
+                            <div class="step-content step-3" style="display: none;">
+                                <h4 class="mb-4"><i class="fas fa-palette me-2"></i>Персонализация</h4>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Добавьте фото ребенка (опционально)</label>
+                                    <div class="border rounded p-4 text-center upload-area" onclick="document.getElementById('childPhoto').click()">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                        <p>Нажмите для загрузки фото</p>
+                                        <p class="text-muted small">AI использует фото для создания персонализированных иллюстраций</p>
+                                    </div>
+                                    <input type="file" class="d-none" id="childPhoto" accept="image/*" onchange="previewPhoto(event)">
+                                    <div id="photoPreview" class="mt-3 text-center"></div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Любимые персонажи ребенка</label>
+                                    <input type="text" class="form-control" id="favoriteCharacters" 
+                                           placeholder="Миньоны, Свинка Пеппа, Фиксики, Лунтик, Маша и Медведь...">
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="goToStep(2)">
+                                        <i class="fas fa-arrow-left me-2"></i>Назад
+                                    </button>
+                                    <button type="button" class="btn gradient-btn" onclick="goToStep(4)">
+                                        Далее <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Шаг 4: Настройки -->
+                            <div class="step-content step-4" style="display: none;">
+                                <h4 class="mb-4"><i class="fas fa-cog me-2"></i>Настройки книги</h4>
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Язык книги</label>
+                                        <select class="form-select" id="language">
+                                            <option value="ru" selected>Русский</option>
+                                            <option value="en">English</option>
+                                            <option value="es">Español</option>
+                                            <option value="fr">Français</option>
+                                            <option value="de">Deutsch</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Стиль иллюстраций</label>
+                                        <select class="form-select" id="style">
+                                            <option value="cartoon" selected>Мультяшный</option>
+                                            <option value="watercolor">Акварельный</option>
+                                            <option value="3d">3D-стиль</option>
+                                            <option value="fairytale">Сказочный</option>
+                                            <option value="anime">Аниме</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Дополнительные опции:</label>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="addTasks" checked>
+                                        <label class="form-check-label" for="addTasks">
+                                            <i class="fas fa-tasks me-2"></i>Обучающие задания в конце книги
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="addAudio">
+                                        <label class="form-check-label" for="addAudio">
+                                            <i class="fas fa-volume-up me-2"></i>Аудиоверсия с профессиональной озвучкой
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="addPrintable" checked>
+                                        <label class="form-check-label" for="addPrintable">
+                                            <i class="fas fa-print me-2"></i>Версия для печати
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="ai-thinking" id="aiThinking">
+                                    <h5><i class="fas fa-robot me-2"></i>AI анализирует данные<span id="aiDots">...</span></h5>
+                                    <div class="progress mt-2" style="height: 5px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="goToStep(3)">
+                                        <i class="fas fa-arrow-left me-2"></i>Назад
+                                    </button>
+                                    <button type="button" class="btn gradient-btn" onclick="createBook()">
+                                        <i class="fas fa-wand-magic-sparkles me-2"></i>Создать книгу
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Преимущества -->
+                    <div class="row mt-5 text-center">
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h5>AI-анализ проблемы</h5>
+                            <p class="text-muted">Нейросеть анализирует ситуацию и предлагает педагогическое решение</p>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <h5>Персонализированные иллюстрации</h5>
+                            <p class="text-muted">Ребенок становится главным героем с его внешностью</p>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h5>Мультиязычность</h5>
+                            <p class="text-muted">Книга доступна на 5 языках</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Превью книги -->
+    <section id="preview" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Как выглядит ваша книга</h2>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="book-preview">
+                        <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Обложка">
+                        <div class="preview-watermark">Обложка</div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <h5>Персонализированная обложка</h5>
+                        <p>С именем вашего ребенка и его любимыми персонажами</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="book-preview">
+                        <img src="https://images.unsplash.com/photo-1563461660947-507ef49e9c47?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Иллюстрация 1">
+                        <div class="preview-watermark">Страница 3</div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <h5>Яркие иллюстрации</h5>
+                        <p>Каждая страница - это отдельная картинка</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="book-preview">
+                        <img src="https://images.unsplash.com/photo-1568667256549-094345857637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Иллюстрация 2">
+                        <div class="preview-watermark">Страница 7</div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <h5>Интерактивные элементы</h5>
+                        <p>Игры и задания на каждой странице</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="#pricing" class="btn gradient-btn btn-lg">
+                    <i class="fas fa-shopping-cart me-2"></i>Заказать книгу
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Цены и заказ -->
+    <section id="pricing" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Выберите вариант книги</h2>
+            
+            <div class="row justify-content-center">
+                <!-- Базовый вариант -->
+                <div class="col-md-4 mb-4">
+                    <div class="card pricing-card h-100">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title">Электронная книга</h5>
+                            <div class="display-4 fw-bold my-4">1,990 ₽</div>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>PDF версия</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>12 страниц с иллюстрациями</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Персонализация текста</li>
+                                <li class="mb-2"><i class="fas fa-times text-muted me-2"></i>Печатная версия</li>
+                                <li class="mb-2"><i class="fas fa-times text-muted me-2"></i>Аудиоверсия</li>
+                            </ul>
+                            <button class="btn btn-outline-primary w-100" onclick="selectPlan('digital')">
+                                Выбрать этот вариант
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Популярный вариант -->
+                <div class="col-md-4 mb-4">
+                    <div class="card pricing-card popular h-100">
+                        <div class="popular-badge">Популярно</div>
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title">Печатная книга</h5>
+                            <div class="display-4 fw-bold my-4">3,490 ₽</div>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Печатная книга 20х20 см</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>12 страниц, мелованная бумага</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Твердый переплет</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>PDF версия в подарок</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Аудиоверсия</li>
+                            </ul>
+                            <button class="btn gradient-btn w-100" onclick="selectPlan('print')">
+                                Выбрать этот вариант
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Премиум вариант -->
+                <div class="col-md-4 mb-4">
+                    <div class="card pricing-card h-100">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title">Премиум набор</h5>
+                            <div class="display-4 fw-bold my-4">5,990 ₽</div>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Печатная книга 25х25 см</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>16 страниц, премиум бумага</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Твердый переплет с тиснением</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>PDF + Аудиоверсия</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Набор наклеек с героями</li>
+                            </ul>
+                            <button class="btn btn-outline-primary w-100" onclick="selectPlan('premium')">
+                                Выбрать этот вариант
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    После оплаты книга будет готова в течение 24 часов. Печатная версия доставляется 3-7 дней.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Как это работает -->
+    <section id="how-it-works" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Как это работает</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center p-4">
+                        <div class="fs-1 text-primary mb-3">1</div>
+                        <h5>Опишите проблему</h5>
+                        <p class="text-muted">Расскажите о ситуации, которую нужно решить через сказку</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center p-4">
+                        <div class="fs-1 text-primary mb-3">2</div>
+                        <h5>AI анализирует</h5>
+                        <p class="text-muted">Нейросеть предлагает педагогическое решение и сюжет</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center p-4">
+                        <div class="fs-1 text-primary mb-3">3</div>
+                        <h5>Генерация контента</h5>
+                        <p class="text-muted">Создается уникальная история и иллюстрации</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center p-4">
+                        <div class="fs-1 text-primary mb-3">4</div>
+                        <h5>Готовая книга</h5>
+                        <p class="text-muted">Получаете персонализированную книгу в разных форматах</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4><i class="fas fa-book-open me-2"></i>MagicBook</h4>
+                    <p class="mt-3">Создаем волшебные обучающие книги для детей с помощью искусственного интеллекта</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Ссылки</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#create" class="text-white-50 text-decoration-none">Создать книгу</a></li>
+                        <li><a href="#preview" class="text-white-50 text-decoration-none">Пример книги</a></li>
+                        <li><a href="#pricing" class="text-white-50 text-decoration-none">Заказать</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Контакты</h5>
+                    <p class="text-white-50">По вопросам сотрудничества: <br>contact@magicbook.ai</p>
+                </div>
+            </div>
+            <hr class="bg-white-50">
+            <p class="text-center text-white-50 mb-0">© 2024 MagicBook. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Текущее состояние
+        let currentStep = 1;
+        let selectedAge = 3;
+        let selectedInterests = ['динозавры'];
+        let currentLanguage = 'ru';
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Выбор возраста
+            document.querySelectorAll('.age-badge').forEach(badge => {
+                badge.addEventListener('click', function() {
+                    document.querySelectorAll('.age-badge').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedAge = this.dataset.age;
+                    document.getElementById('childAge').value = selectedAge;
+                });
+            });
+            
+            // Выбор языка
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.language-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentLanguage = this.dataset.lang;
+                    alert('Язык изменен на ' + (currentLanguage === 'ru' ? 'Русский' : 'English'));
+                });
+            });
+            
+            // Выбор интересов
+            document.querySelectorAll('.interest-badge').forEach(badge => {
+                badge.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    updateSelectedInterests();
+                });
+            });
+            
+            // Поле интересов
+            document.getElementById('customInterests').addEventListener('input', updateSelectedInterests);
+            
+            // Показываем первый шаг
+            goToStep(1);
+            
+            // Активируем первую кнопку возраста
+            document.querySelector('.age-badge.active').click();
+        });
+        
+        // Функции перехода по шагам
+        function goToStep(step) {
+            // Скрыть все шаги
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Показать выбранный шаг
+            document.querySelector(`.step-${step}`).style.display = 'block';
+            
+            // Обновить индикатор шагов
+            document.querySelectorAll('.step').forEach((stepEl, index) => {
+                const stepNum = index + 1;
+                stepEl.classList.remove('active', 'completed');
+                
+                if (stepNum === step) {
+                    stepEl.classList.add('active');
+                } else if (stepNum < step) {
+                    stepEl.classList.add('completed');
+                }
+            });
+            
+            currentStep = step;
+            
+            // Прокрутить к форме
+            if (step > 1) {
+                document.getElementById('create').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function updateSelectedInterests() {
+            selectedInterests = [];
+            
+            // Добавить выбранные значки
+            document.querySelectorAll('.interest-badge.active').forEach(badge => {
+                selectedInterests.push(badge.dataset.interest);
+            });
+            
+            // Добавить пользовательские интересы
+            const customInterests = document.getElementById('customInterests').value.trim();
+            if (customInterests) {
+                const customList = customInterests.split(',').map(item => item.trim()).filter(item => item);
+                selectedInterests.push(...customList);
+            }
+            
+            // Удалить дубликаты
+            selectedInterests = [...new Set(selectedInterests)];
+        }
+        
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('photoPreview');
+            
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Файл слишком большой. Максимальный размер: 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" class="img-thumbnail" style="max-width: 200px; border-radius: 10px;">
+                        <p class="mt-2 text-success"><i class="fas fa-check-circle me-1"></i>Фото загружено</p>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function createBook() {
+            // Валидация
+            const parentName = document.getElementById('parentName').value.trim();
+            const childName = document.getElementById('childName').value.trim();
+            const problem = document.getElementById('problem').value.trim();
+            
+            if (!parentName || !childName || !problem) {
+                alert('Пожалуйста, заполните все обязательные поля');
+                return;
+            }
+            
+            // Показать индикатор AI
+            document.getElementById('aiThinking').style.display = 'block';
+            
+            // Собрать данные
+            const bookData = {
+                parentName: parentName,
+                childName: childName,
+                childAge: selectedAge,
+                problem: problem,
+                interests: selectedInterests.join(', '),
+                favoriteCharacters: document.getElementById('favoriteCharacters').value.trim(),
+                language: document.getElementById('language').value,
+                style: document.getElementById('style').value,
+                addTasks: document.getElementById('addTasks').checked,
+                addAudio: document.getElementById('addAudio').checked,
+                addPrintable: document.getElementById('addPrintable').checked
+            };
+            
+            // Имитация работы AI
+            setTimeout(() => {
+                // Скрыть индикатор
+                document.getElementById('aiThinking').style.display = 'none';
+                
+                // Показать сообщение
+                alert(`Книга для ${childName} создана!\n\nAI придумал историю о том, как ${childName} научился справляться с проблемой.\n\nТеперь вы можете заказать книгу.`);
+                
+                // Прокрутить к разделу заказа
+                document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+        
+        function selectPlan(plan) {
+            const plans = {
+                'digital': 'Электронная книга (1,990 ₽)',
+                'print': 'Печатная книга (3,490 ₽)',
+                'premium': 'Премиум набор (5,990 ₽)'
+            };
+            
+            alert(`Вы выбрали: ${plans[plan]}\n\nДля продолжения заказа свяжитесь с нами:\nEmail: contact@magicbook.ai\nТелефон: +7 (XXX) XXX-XX-XX`);
+        }
+    </script>
+</body>
+</html>
